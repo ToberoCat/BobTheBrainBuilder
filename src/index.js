@@ -27,6 +27,7 @@ class Camera {
     constructor() {
         this.offsetX = 0;
         this.offsetY = 0;
+        this.zoom = 3;
     }
 }
 
@@ -34,48 +35,69 @@ class Game {
     constructor(width, height) {
         this.width = width;
         this.height = height;
-        this.clientX = 0;
-        this.clientY = 0;
-        this.grabbing = false;
+        this.listeners = [];
+        this.elements = [];
 
         this.camera = new Camera();
-        this.grid = new BackgroundGrid(width, height);
-        this.nodes = [];
+        this.grid = new BackgroundGrid(this);
+        this.nodeManager = new NodePlacementManager(this);
 
-        this.nodes.push(new Node());
+        document.addEventListener("mousedown", e => this.emitEvent("mousedown", e));
+        document.addEventListener("mouseup", e => this.emitEvent("mouseup", e));
+        document.addEventListener("wheel", event => this.emitEvent("wheel", event));
+        document.addEventListener("mousemove", e => this.emitEvent("mousemove", e));
+    }
 
-        document.addEventListener("mousedown", () => {
-            document.body.style.cursor = 'grab';
-            this.grabbing = true;
-        });
+    emitEvent(event, data) {
+        for (const listener of this.listeners)
+            if (listener.emitEvent(event, data))
+                return;
+    }
 
-        document.addEventListener("mouseup", () => {
-            document.body.style.cursor = 'default';
-            this.grabbing = false;
-        });
-
-        document.addEventListener("wheel", event => {
-            this.grid.zoom = Math.min(Math.max(this.grid.zoom + Math.sign(event.deltaY) * .1, 1), 5);
-        });
-
-        document.addEventListener("mousemove", e => {
-            this.clientX = e.clientX;
-            this.clientY = e.clientY;
-            if (!this.grabbing) return;
-
-            this.camera.offsetX += e.movementX;
-            this.camera.offsetY += e.movementY;
-        });
+    registerElement(element) {
+        this.listeners.unshift(element);
+        this.elements.push(element);
     }
 
     update(deltaTime) {
-        this.grid.update(deltaTime);
-
-        this.nodes.forEach(node => node.update(deltaTime, this.clientX, this.clientY));
+        this.elements.forEach(listener => listener.update(deltaTime));
     }
 
     draw(ctx) {
-        this.grid.draw(this.camera, ctx);
-        this.nodes.forEach(node => node.draw(this.camera, ctx));
+        this.elements.forEach(listener => listener.draw(ctx));
+    }
+}
+
+class GameElement {
+    constructor(game) {
+        this.game = game;
+        this.events = new Map();
+        this.game.registerElement(this);
+    }
+
+    /**
+     * Call an event
+     * @param {string} event
+     * @param {json} data
+     * @return Returns if the event has been consumed
+     */
+    emitEvent(event, data) {
+        const handler = this.events[event];
+        if (handler)
+            return handler(data);
+        return false;
+    }
+
+    addEventListener(event, handler) {
+        handler = handler.bind(this);
+        this.events[event] = handler;
+    }
+
+    update(deltaTime) {
+
+    }
+
+    draw(ctx) {
+
     }
 }
