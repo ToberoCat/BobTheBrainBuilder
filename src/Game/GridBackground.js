@@ -5,7 +5,7 @@ class BackgroundGrid extends GameElement {
         super(game);
         this.width = game.width;
         this.height = game.height;
-        this.grabbing = false;
+        this.grabbingStart = null;
 
         this.addEventListener("mousedown", this.mouseDown);
         this.addEventListener("node-placement", this.mouseDown)
@@ -27,6 +27,7 @@ class BackgroundGrid extends GameElement {
         for (let i = 0; i < this.height; i += zoom)
             ctx.strokeRect(0, i + this.game.camera.offsetY % zoom, this.width, 0);
     }
+
     //</editor-fold>
 
     //<editor-fold desc="Events">
@@ -35,21 +36,21 @@ class BackgroundGrid extends GameElement {
         event.preventDefault();
 
         document.body.style.cursor = 'grab';
-        this.grabbing = true;
+        this.grabbingStart = {x: event.clientX - this.game.camera.offsetX, y: event.clientY - this.game.camera.offsetY};
         return true;
     }
 
     mouseUp() {
         document.body.style.cursor = 'default';
-        this.grabbing = false;
+        this.grabbingStart = null;
         return true;
     }
 
     mouseMove(event) {
-        if (!this.grabbing) return false;
+        if (!this.grabbingStart) return false;
 
-        this.game.camera.offsetX += event.movementX;
-        this.game.camera.offsetY += event.movementY;
+        this.game.camera.offsetX = event.clientX - this.grabbingStart.x;
+        this.game.camera.offsetY = event.clientY - this.grabbingStart.y;
         return true;
     }
 
@@ -61,5 +62,6 @@ class BackgroundGrid extends GameElement {
         });
         return true;
     }
+
     //</editor-fold>
 }

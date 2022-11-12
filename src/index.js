@@ -41,6 +41,7 @@ class Game {
         this.camera = new Camera();
         this.grid = new BackgroundGrid(this);
         this.nodeManager = new NodePlacementManager(this);
+        this.nodeManagerButtons = new NodeManagementButton(this);
 
         document.addEventListener("mousedown", e => this.emitEvent("mousedown", e));
         document.addEventListener("mouseup", e => this.emitEvent("mouseup", e));

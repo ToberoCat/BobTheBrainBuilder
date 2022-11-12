@@ -1,7 +1,7 @@
 const NODE_RADIUS = CELL_SIZE;
 
 const ICON = new Image();
-ICON.src = "../../res/node.svg";
+ICON.src = "../../res/nodes/node.svg";
 
 class Node {
     constructor(x, y) {
@@ -33,13 +33,27 @@ class NodePlacementManager extends GameElement {
         this.nodeX = 0;
         this.nodeY = 0;
 
-        this.placing = true;
+        this.placing = false;
+        this.paused = false;
         this.nodes = [];
 
         this.addEventListener("mousedown", this.mouseDown);
         this.addEventListener("mouseup", this.mouseUp);
         this.addEventListener("mousemove", this.mouseMove);
         this.addEventListener("zooming", this.zoom);
+
+        document.getElementById("placenode").addEventListener("mouseover", this.mouseOver);
+        document.getElementById("placenode").addEventListener("mouseout", this.mouseLeftOver);
+    }
+
+    mouseOver() {
+        console.log("paused")
+        this.paused = true;
+    }
+
+    mouseLeftOver() {
+        console.log("out")
+        this.paused = false;
     }
 
     zoom(event) {
@@ -48,6 +62,7 @@ class NodePlacementManager extends GameElement {
     }
 
     mouseDown(event) {
+        if (this.paused) return false;
         if (event.which !== 1) return false;
         if (!this.placing) return false;
         this.placing = false;
@@ -61,11 +76,13 @@ class NodePlacementManager extends GameElement {
     }
 
     mouseUp(event) {
+        if (this.paused) return false;
         if (event.which !== 1) return false;
         return this.placing;
     }
 
     mouseMove(event) {
+        if (this.paused) return false;
         if (event.buttons === 2) return false;
         if (!this.placing) return false;
 

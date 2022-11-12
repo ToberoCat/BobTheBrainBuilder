@@ -2,6 +2,21 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#placenode {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+#placenode:hover {
+    filter: brightness(.95);
+}
+
+#placenode:active {
+    filter: brightness(.9);
 }
 
 #canvas {
