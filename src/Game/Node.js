@@ -1,7 +1,14 @@
 const NODE_RADIUS = CELL_SIZE;
 
-const ICON = new Image();
-ICON.src = "../../res/nodes/node.svg";
+const ICON_DEFAULT = new Image();
+ICON_DEFAULT.src = "../../res/nodes/node.svg";
+
+
+const ICON_OCCUPIED = new Image();
+ICON_OCCUPIED.src = "../../res/nodes/occupiednode.svg";
+
+const ICON_VALID = new Image();
+ICON_VALID.src = "../../res/nodes/validnode.svg";
 
 class Node {
     constructor(x, y) {
@@ -12,7 +19,7 @@ class Node {
     }
 
     draw(camera, ctx) {
-        ctx.drawImage(ICON,
+        ctx.drawImage(ICON_DEFAULT,
             this.renderX + camera.offsetX,
             this.renderY + camera.offsetY,
             camera.zoom * NODE_RADIUS,
@@ -43,20 +50,30 @@ class NodePlacementManager extends GameElement {
         this.addEventListener("zooming", this.zoom);
     }
 
-    isOccupied(x, y) {
-        const yMap = this.occupations.get(x);
-        return yMap ? yMap.has(y) : false;
+    isOccupied(xC, yC) {
+        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
+        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
+
+        const yMap = this.occupations[x];
+        return yMap ? yMap[y] !== undefined : false;
     }
 
-    makeOccupied(x, y, node) {
-        let yMap = this.occupations.get(x);
+    makeOccupied(xC, yC, node) {
+        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
+        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
+
+        let yMap = this.occupations[x];
         if (!yMap) yMap = new Map();
 
         yMap[y] = node;
+
         this.occupations[x] = yMap;
     }
 
-    getOccupied(x, y) {
+    getOccupied(xC, yC) {
+        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
+        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
+
         if (!this.isOccupied(x, y)) return null;
         return this.occupations[x][y];
     }
@@ -74,11 +91,13 @@ class NodePlacementManager extends GameElement {
     mouseUp(event) {
         if (event.which !== 1) return false;
         if (!this.placing) return false;
+        if (this.isOccupied(this.nodeX, this.nodeY)) return true;
 
         const node = new Node(this.nodeX, this.nodeY);
         node.adjustPosition(this.game.camera);
         this.nodes.push(node);
 
+        this.makeOccupied(this.nodeX, this.nodeY, node);
         this.game.emitEvent("node-placement", {});
         return true;
     }
@@ -93,7 +112,9 @@ class NodePlacementManager extends GameElement {
         return true;
     }
 
-    getBrightness
+    getImage(x, y) {
+        return this.isOccupied(x, y) ? ICON_OCCUPIED : ICON_VALID;
+    }
 
     draw(ctx) {
         this.nodes.forEach(node => node.draw(this.game.camera, ctx));
@@ -107,9 +128,7 @@ class NodePlacementManager extends GameElement {
         const x = getRenderingPosition(this.nodeX, zoom, this.game.camera.offsetX);
         const y = getRenderingPosition(this.nodeY, zoom, this.game.camera.offsetY);
 
-        ctx.drawImage(ICON, x, y, actualRadius, actualRadius);
-
-
+        ctx.drawImage(this.getImage(this.nodeX, this.nodeY), x, y, actualRadius, actualRadius);
     }
 }
 
