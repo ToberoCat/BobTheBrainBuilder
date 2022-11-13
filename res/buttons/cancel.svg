@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" stroke="#000" stroke-linecap="round" stroke-linejoin="round" fill="#fff" fill-rule="evenodd">
+    <use xlink:href="#B" fill="#ea5a47" stroke="none" fill-rule="nonzero"/>
+    <use xlink:href="#B" fill="none" stroke-linejoin="miter" stroke-width="3"/>
+    <defs >
+        <path id="B" d="M42.012528066113 30.5899l3.8452-3.9067 13.4199-13.653-10.3502-10.5302-17.5541 17.8629-17.4523-17.754-10.3499 10.5305 17.4463 17.7372-18.6817 18.997 10.3502 10.5303 18.6793-19.0143 18.7845 19.1106 10.3501-10.5161-18.7751-19.1037z"/>
+    </defs>
+</svg>

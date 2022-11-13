@@ -47,6 +47,7 @@ class Game {
         document.addEventListener("mouseup", e => this.emitEvent("mouseup", e));
         document.addEventListener("wheel", event => this.emitEvent("wheel", event));
         document.addEventListener("mousemove", e => this.emitEvent("mousemove", e));
+        document.addEventListener("keydown", e => this.emitEvent("keydown", e));
     }
 
     emitEvent(event, data) {

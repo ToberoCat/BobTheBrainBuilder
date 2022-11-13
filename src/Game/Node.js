@@ -34,26 +34,31 @@ class NodePlacementManager extends GameElement {
         this.nodeY = 0;
 
         this.placing = false;
-        this.paused = false;
         this.nodes = [];
+        this.occupations = new Map();
 
         this.addEventListener("mousedown", this.mouseDown);
         this.addEventListener("mouseup", this.mouseUp);
         this.addEventListener("mousemove", this.mouseMove);
         this.addEventListener("zooming", this.zoom);
-
-        document.getElementById("placenode").addEventListener("mouseover", this.mouseOver);
-        document.getElementById("placenode").addEventListener("mouseout", this.mouseLeftOver);
     }
 
-    mouseOver() {
-        console.log("paused")
-        this.paused = true;
+    isOccupied(x, y) {
+        const yMap = this.occupations.get(x);
+        return yMap ? yMap.has(y) : false;
     }
 
-    mouseLeftOver() {
-        console.log("out")
-        this.paused = false;
+    makeOccupied(x, y, node) {
+        let yMap = this.occupations.get(x);
+        if (!yMap) yMap = new Map();
+
+        yMap[y] = node;
+        this.occupations[x] = yMap;
+    }
+
+    getOccupied(x, y) {
+        if (!this.isOccupied(x, y)) return null;
+        return this.occupations[x][y];
     }
 
     zoom(event) {
@@ -62,10 +67,13 @@ class NodePlacementManager extends GameElement {
     }
 
     mouseDown(event) {
-        if (this.paused) return false;
+        if (event.which !== 1) return false;
+        return this.placing;
+    }
+
+    mouseUp(event) {
         if (event.which !== 1) return false;
         if (!this.placing) return false;
-        this.placing = false;
 
         const node = new Node(this.nodeX, this.nodeY);
         node.adjustPosition(this.game.camera);
@@ -75,14 +83,7 @@ class NodePlacementManager extends GameElement {
         return true;
     }
 
-    mouseUp(event) {
-        if (this.paused) return false;
-        if (event.which !== 1) return false;
-        return this.placing;
-    }
-
     mouseMove(event) {
-        if (this.paused) return false;
         if (event.buttons === 2) return false;
         if (!this.placing) return false;
 
@@ -92,6 +93,8 @@ class NodePlacementManager extends GameElement {
         return true;
     }
 
+    getBrightness
+
     draw(ctx) {
         this.nodes.forEach(node => node.draw(this.game.camera, ctx));
 
@@ -100,12 +103,13 @@ class NodePlacementManager extends GameElement {
 
         const zoom = this.game.camera.zoom;
         const actualRadius = zoom * NODE_RADIUS;
-        ctx.drawImage(ICON,
-            getRenderingPosition(this.nodeX, zoom, this.game.camera.offsetX),
-            getRenderingPosition(this.nodeY, zoom, this.game.camera.offsetY),
-            actualRadius,
-            actualRadius
-        );
+
+        const x = getRenderingPosition(this.nodeX, zoom, this.game.camera.offsetX);
+        const y = getRenderingPosition(this.nodeY, zoom, this.game.camera.offsetY);
+
+        ctx.drawImage(ICON, x, y, actualRadius, actualRadius);
+
+
     }
 }
 
