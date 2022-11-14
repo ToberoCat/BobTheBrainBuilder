@@ -42,7 +42,17 @@ class NodeManagementButton extends GameElement {
 
     keyDown(event) {
         if (event.keyCode !== 27) return false;
-        this.cancelPlacing();
+
+        if (this.mode === NODE_MODE_CONNECT) {
+            if (!this.game.nodeConnectionManager.startNode) {
+                this.cancelPlacing();
+            } else {
+                this.game.nodeConnectionManager.startNode = null;
+                this.game.nodeConnectionManager.destination = null;
+            }
+        } else
+            this.cancelPlacing();
+
         return false;
     }
 

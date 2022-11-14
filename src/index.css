@@ -49,6 +49,13 @@ body {
     visibility: hidden;
 }
 
+#playbutton {
+    top: 10px;
+    left: 10px;
+    width: 64px;
+    height: 64px;
+}
+
 #canvas {
     position: absolute;
     left: 50%;

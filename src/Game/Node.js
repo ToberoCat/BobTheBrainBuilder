@@ -1,4 +1,4 @@
-const NODE_RADIUS = CELL_SIZE / 2 - 4;
+const NODE_RADIUS = CELL_SIZE / 2 - 6;
 const CLAMP_SIZE = CELL_SIZE / 4;
 
 class Node {
@@ -64,12 +64,12 @@ class NodePlacementManager extends GameElement {
     }
 
     getNodeAt(xC, yC) {
-        const x = Math.floor(xC / CLAMP_SIZE) * CLAMP_SIZE;
-        const y = Math.floor(yC / CLAMP_SIZE) * CLAMP_SIZE;
+        const x = Math.round(xC / CLAMP_SIZE) * CLAMP_SIZE;
+        const y = Math.round(yC / CLAMP_SIZE) * CLAMP_SIZE;
 
         for (let i = 0; i < this.occupations.length; i++) {
             const node = this.occupations[i];
-            if (this.circleIntersect(x, y, NODE_RADIUS, node.x, node.y, NODE_RADIUS))
+            if (this.circleIntersect(x, y, NODE_RADIUS + 4, node.x, node.y, NODE_RADIUS + 4))
                 return node.node;
         }
         return null;
@@ -167,17 +167,17 @@ class NodeConnectionManager extends GameElement {
 
         this.addEventListener("mouseup", this.mouseUp);
         this.addEventListener("mousemove", this.mouseMove);
+        this.addEventListener("zooming", this.mouseMove);
     }
 
     mouseMove(event) {
-        if (!this.connecting) return false;
-        if (!this.startNode) return true;
+        if (!this.connecting || !this.startNode) return false;
 
         this.destination = {
             x: this.translateScreen(event.clientX),
             y: this.translateScreen(event.clientY)
         };
-        return true;
+        return false;
     }
 
     mouseUp(event) {
@@ -188,7 +188,7 @@ class NodeConnectionManager extends GameElement {
                 this.translateScreen(event.clientY)
             );
             if (this.destination == null)
-                return true;
+                return false;
 
             const weight = 1;
             this.startNode.outputConnections.push({
@@ -212,7 +212,7 @@ class NodeConnectionManager extends GameElement {
                 this.translateScreen(event.clientX),
                 this.translateScreen(event.clientY)
             );
-        return true;
+        return false;
     }
 
     translateScreen(screenPosition) {
@@ -233,8 +233,8 @@ class NodeConnectionManager extends GameElement {
     }
 
     draw(ctx) {
-        ctx.lineWidth = this.game.camera.zoom;
-        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 2 * this.game.camera.zoom;
+        ctx.strokeStyle = "#222522";
 
         this.connections.forEach(connection => this.drawConnection(ctx, connection.start, connection.destination))
 
