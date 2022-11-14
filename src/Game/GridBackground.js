@@ -1,4 +1,7 @@
 const CELL_SIZE = 50;
+const MAX_SCROLL = 5;
+const MIN_SCROLL = 1;
+const ZOOM_SPEED = .1;
 
 class BackgroundGrid extends GameElement {
     constructor(game) {
@@ -6,6 +9,7 @@ class BackgroundGrid extends GameElement {
         this.width = game.width;
         this.height = game.height;
         this.grabbingStart = null;
+        this.innerGridDepth = (this.game.camera.zoom - MIN_SCROLL) / MAX_SCROLL;
 
         this.addEventListener("mousedown", this.mouseDown);
         this.addEventListener("node-placement", this.mouseDown)
@@ -18,14 +22,23 @@ class BackgroundGrid extends GameElement {
     //<editor-fold desc="Rendering">
     draw(ctx) {
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "#4A5254";
 
         const zoom = CELL_SIZE * this.game.camera.zoom;
-        for (let i = 0; i < this.width; i += zoom)
-            ctx.strokeRect(i + this.game.camera.offsetX % zoom, 0, 0, this.height);
 
-        for (let i = 0; i < this.height; i += zoom)
-            ctx.strokeRect(0, i + this.game.camera.offsetY % zoom, this.width, 0);
+        this.drawGrid(ctx, zoom / 4, `hsla(192,6%,31%, ${this.innerGridDepth})`);
+        this.drawGrid(ctx, zoom, "hsla(195,4%,37%, 1)");
+    }
+
+    drawGrid(ctx, level, color) {
+        const offsetX = this.game.camera.offsetX % level;
+        const offsetY = this.game.camera.offsetY % level;
+
+        ctx.strokeStyle = color;
+        for (let i = 0; i < this.width; i += level)
+            ctx.strokeRect(i + offsetX, 0, 0, this.height);
+
+        for (let i = 0; i < this.height; i += level)
+            ctx.strokeRect(0, i + offsetY, this.width, 0);
     }
 
     //</editor-fold>
@@ -55,7 +68,9 @@ class BackgroundGrid extends GameElement {
     }
 
     scroll(event) {
-        this.game.camera.zoom = Math.min(Math.max(this.game.camera.zoom - Math.sign(event.deltaY) * .1, 1), 5);
+        this.game.camera.zoom = Math.min(Math.max(this.game.camera.zoom - Math.sign(event.deltaY) * ZOOM_SPEED,
+            MIN_SCROLL), MAX_SCROLL);
+        this.innerGridDepth = (this.game.camera.zoom - MIN_SCROLL) / MAX_SCROLL;
         this.game.emitEvent("zooming", {
             clientX: event.clientX,
             clientY: event.clientY

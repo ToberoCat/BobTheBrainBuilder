@@ -1,14 +1,5 @@
-const NODE_RADIUS = CELL_SIZE;
-
-const ICON_DEFAULT = new Image();
-ICON_DEFAULT.src = "../../res/nodes/node.svg";
-
-
-const ICON_OCCUPIED = new Image();
-ICON_OCCUPIED.src = "../../res/nodes/occupiednode.svg";
-
-const ICON_VALID = new Image();
-ICON_VALID.src = "../../res/nodes/validnode.svg";
+const NODE_RADIUS = CELL_SIZE / 2 - 4;
+const CLAMP_SIZE = CELL_SIZE / 4;
 
 class Node {
     constructor(x, y) {
@@ -16,21 +7,39 @@ class Node {
         this.y = y;
         this.renderX = 0;
         this.renderY = 0;
+        this.inputConnections = [];
+        this.outputConnections = [];
     }
 
     draw(camera, ctx) {
-        ctx.drawImage(ICON_DEFAULT,
-            this.renderX + camera.offsetX,
+        ctx.beginPath();
+
+        ctx.arc(this.renderX + camera.offsetX,
             this.renderY + camera.offsetY,
             camera.zoom * NODE_RADIUS,
-            camera.zoom * NODE_RADIUS
-        );
+            0,
+            Math.PI * 2,
+            false);
+        ctx.fillStyle = '#515151';
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = camera.zoom;
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.font = '20px serif';
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#000000";
+
+        const x = Math.floor(this.x / CELL_SIZE) * CELL_SIZE;
+        const y = Math.floor(this.y / CELL_SIZE) * CELL_SIZE;
+        ctx.fillText(`${x}, ${y}`, this.renderX + camera.offsetX, this.renderY + camera.offsetY);
     }
 
     adjustPosition(camera) {
         const zoom = camera.zoom;
-        this.renderX = getRenderingPosition(this.x, zoom, 0);
-        this.renderY = getRenderingPosition(this.y, zoom, 0);
+        this.renderX = worldToRender(this.x, zoom, 0);
+        this.renderY = worldToRender(this.y, zoom, 0);
     }
 }
 
@@ -42,7 +51,7 @@ class NodePlacementManager extends GameElement {
 
         this.placing = false;
         this.nodes = [];
-        this.occupations = new Map();
+        this.occupations = [];
 
         this.addEventListener("mousedown", this.mouseDown);
         this.addEventListener("mouseup", this.mouseUp);
@@ -51,31 +60,42 @@ class NodePlacementManager extends GameElement {
     }
 
     isOccupied(xC, yC) {
-        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
-        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
+        const x = Math.floor(xC / CLAMP_SIZE) * CLAMP_SIZE;
+        const y = Math.floor(yC / CLAMP_SIZE) * CLAMP_SIZE;
 
-        const yMap = this.occupations[x];
-        return yMap ? yMap[y] !== undefined : false;
+        for (let i = 0; i < this.occupations.length; i++) {
+            const node = this.occupations[i];
+            if (this.circleIntersect(x, y, NODE_RADIUS, node.x, node.y, NODE_RADIUS))
+                return true;
+        }
+        return false;
+    }
+
+    getNodeAt(xC, yC) {
+        const x = Math.floor(xC / CLAMP_SIZE) * CLAMP_SIZE;
+        const y = Math.floor(yC / CLAMP_SIZE) * CLAMP_SIZE;
+
+        for (let i = 0; i < this.occupations.length; i++) {
+            const node = this.occupations[i];
+            if (this.circleIntersect(x, y, NODE_RADIUS, node.x, node.y, NODE_RADIUS))
+                return node.node;
+        }
+        return null;
+    }
+
+    circleIntersect(x0, y0, r0, x1, y1, r1) {
+        return (Math.pow(x0 - x1, 2) + Math.pow(y0 - y1, 2)) <= Math.pow(r0 + r1, 2);
     }
 
     makeOccupied(xC, yC, node) {
-        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
-        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
+        const x = Math.floor(xC / CLAMP_SIZE) * CLAMP_SIZE;
+        const y = Math.floor(yC / CLAMP_SIZE) * CLAMP_SIZE;
 
-        let yMap = this.occupations[x];
-        if (!yMap) yMap = new Map();
-
-        yMap[y] = node;
-
-        this.occupations[x] = yMap;
-    }
-
-    getOccupied(xC, yC) {
-        const x = Math.floor(xC / CELL_SIZE) * CELL_SIZE;
-        const y = Math.floor(yC / CELL_SIZE) * CELL_SIZE;
-
-        if (!this.isOccupied(x, y)) return null;
-        return this.occupations[x][y];
+        this.occupations.push({
+            x: x,
+            y: y,
+            node: node
+        });
     }
 
     zoom(event) {
@@ -112,8 +132,8 @@ class NodePlacementManager extends GameElement {
         return true;
     }
 
-    getImage(x, y) {
-        return this.isOccupied(x, y) ? ICON_OCCUPIED : ICON_VALID;
+    getFillColor(x, y) {
+        return this.isOccupied(x, y) ? "#842323" : "#224914";
     }
 
     draw(ctx) {
@@ -123,15 +143,116 @@ class NodePlacementManager extends GameElement {
             return;
 
         const zoom = this.game.camera.zoom;
-        const actualRadius = zoom * NODE_RADIUS;
 
-        const x = getRenderingPosition(this.nodeX, zoom, this.game.camera.offsetX);
-        const y = getRenderingPosition(this.nodeY, zoom, this.game.camera.offsetY);
+        const x = worldToRender(this.nodeX, zoom, this.game.camera.offsetX);
+        const y = worldToRender(this.nodeY, zoom, this.game.camera.offsetY);
 
-        ctx.drawImage(this.getImage(this.nodeX, this.nodeY), x, y, actualRadius, actualRadius);
+        ctx.beginPath();
+        ctx.arc(
+            x,
+            y,
+            zoom * NODE_RADIUS,
+            0,
+            Math.PI * 2,
+            false
+        );
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = zoom;
+        ctx.fillStyle = this.getFillColor(this.nodeX, this.nodeY);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
     }
 }
 
-function getRenderingPosition(raw, zoom, offset) {
-    return Math.floor(raw / CELL_SIZE) * CELL_SIZE * zoom + offset;
+class NodeConnectionManager extends GameElement {
+    constructor(game) {
+        super(game);
+        this.connecting = false;
+        this.startNode = null;
+        this.destination = null;
+        this.connections = [];
+
+        this.addEventListener("mouseup", this.mouseUp);
+        this.addEventListener("mousemove", this.mouseMove);
+    }
+
+    mouseMove(event) {
+        if (!this.connecting) return false;
+        if (!this.startNode) return true;
+
+        this.destination = {
+            x: this.translateScreen(event.clientX),
+            y: this.translateScreen(event.clientY)
+        };
+        return true;
+    }
+
+    mouseUp(event) {
+        if (!this.connecting) return false;
+        if (this.startNode) {
+            this.destination = this.game.nodeManager.getNodeAt(
+                this.translateScreen(event.clientX),
+                this.translateScreen(event.clientY)
+            );
+            if (this.destination == null)
+                return true;
+
+            const weight = 1;
+            this.startNode.outputConnections.push({
+                weight: weight,
+                node: this.destination
+            });
+            this.destination.inputConnections.push({
+                weight: weight,
+                node: this.startNode
+            });
+
+            this.connections.push({
+                start: this.startNode,
+                destination: this.destination,
+                weight: weight
+            });
+            this.startNode = null;
+            this.destination = null;
+        } else
+            this.startNode = this.game.nodeManager.getNodeAt(
+                this.translateScreen(event.clientX),
+                this.translateScreen(event.clientY)
+            );
+        return true;
+    }
+
+    translateScreen(screenPosition) {
+        return (screenPosition - this.game.camera.offsetY) / this.game.camera.zoom;
+    }
+
+    drawConnection(ctx, start, destination) {
+        const camera = this.game.camera;
+        ctx.moveTo(
+            worldToRender(start.x, camera.zoom, camera.offsetX),
+            worldToRender(start.y, camera.zoom, camera.offsetY)
+        );
+        ctx.lineTo(
+            worldToRender(destination.x, camera.zoom, camera.offsetX),
+            worldToRender(destination.y, camera.zoom, camera.offsetY)
+        );
+        ctx.stroke();
+    }
+
+    draw(ctx) {
+        ctx.lineWidth = this.game.camera.zoom;
+        ctx.strokeStyle = "#000000";
+
+        this.connections.forEach(connection => this.drawConnection(ctx, connection.start, connection.destination))
+
+        if (!this.startNode || !this.destination) return;
+        this.drawConnection(ctx, this.startNode, this.destination);
+    }
+
+
+}
+
+function worldToRender(raw, zoom, offset) {
+    return Math.floor(raw / CLAMP_SIZE) * CLAMP_SIZE * zoom + offset;
 }

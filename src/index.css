@@ -36,6 +36,13 @@ body {
     right: 10px;
 }
 
+#connectnode {
+    width: 64px;
+    height: 64px;
+    top: 10px;
+    right: 100px;
+}
+
 #cancelbutton {
     top: 10px;
     right: 10px;

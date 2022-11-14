@@ -1,14 +1,30 @@
+const NODE_MODE_PLACE = 1;
+const NODE_MODE_CONNECT = 2;
+const NODE_MODE_NOTHING = 0;
+
 class NodeManagementButton extends GameElement {
     constructor(game) {
         super(game);
         this.hovering = false;
+        this.mode = NODE_MODE_NOTHING;
 
         const placeButton = document.getElementById("placenode");
         const cancelButton = document.getElementById("cancelbutton");
+        const connectButton = document.getElementById("connectnode");
 
         placeButton.addEventListener("click", e => {
-            this.game.nodeManager.placing = !this.game.nodeManager.placing;
+            this.game.nodeManager.placing = true;
+            this.mode = NODE_MODE_PLACE;
             placeButton.style.visibility = "hidden";
+            connectButton.style.visibility = "hidden";
+            cancelButton.style.visibility = "visible";
+        });
+
+        connectButton.addEventListener("click", e => {
+            this.game.nodeConnectionManager.connecting = true;
+            this.mode = NODE_MODE_CONNECT;
+            placeButton.style.visibility = "hidden";
+            connectButton.style.visibility = "hidden";
             cancelButton.style.visibility = "visible";
         });
 
@@ -37,8 +53,18 @@ class NodeManagementButton extends GameElement {
     }
 
     cancelPlacing() {
-        this.game.nodeManager.placing = false;
+        if (this.mode === NODE_MODE_PLACE)
+            this.game.nodeManager.placing = false;
+        else if (this.mode === NODE_MODE_CONNECT) {
+            const mg = this.game.nodeConnectionManager;
+            mg.connecting = true;
+            mg.startNode = null;
+            mg.destination = null;
+        }
+
+        this.mode = NODE_MODE_NOTHING;
         document.getElementById("placenode").style.visibility = "visible";
+        document.getElementById("connectnode").style.visibility = "visible";
         document.getElementById("cancelbutton").style.visibility = "hidden";
     }
 

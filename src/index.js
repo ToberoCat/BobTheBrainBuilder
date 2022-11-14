@@ -40,6 +40,7 @@ class Game {
 
         this.camera = new Camera();
         this.grid = new BackgroundGrid(this);
+        this.nodeConnectionManager = new NodeConnectionManager(this);
         this.nodeManager = new NodePlacementManager(this);
         this.nodeManagerButtons = new NodeManagementButton(this);
 
