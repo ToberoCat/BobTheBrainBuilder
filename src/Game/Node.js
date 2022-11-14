@@ -26,14 +26,6 @@ class Node {
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
-
-        ctx.font = '20px serif';
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#000000";
-
-        const x = Math.floor(this.x / CELL_SIZE) * CELL_SIZE;
-        const y = Math.floor(this.y / CELL_SIZE) * CELL_SIZE;
-        ctx.fillText(`${x}, ${y}`, this.renderX + camera.offsetX, this.renderY + camera.offsetY);
     }
 
     adjustPosition(camera) {
