@@ -57,7 +57,7 @@ class NodeManagementButton extends GameElement {
             this.game.nodeManager.placing = false;
         else if (this.mode === NODE_MODE_CONNECT) {
             const mg = this.game.nodeConnectionManager;
-            mg.connecting = true;
+            mg.connecting = false;
             mg.startNode = null;
             mg.destination = null;
         }
