@@ -13,7 +13,7 @@ class NodeManagementButton extends GameElement {
         const connectButton = document.getElementById("connectnode");
 
         placeButton.addEventListener("click", e => {
-            this.game.nodeManager.placing = true;
+            this.game.nodePlacementManager.placing = true;
             this.mode = NODE_MODE_PLACE;
             placeButton.style.visibility = "hidden";
             connectButton.style.visibility = "hidden";
@@ -64,7 +64,7 @@ class NodeManagementButton extends GameElement {
 
     cancelPlacing() {
         if (this.mode === NODE_MODE_PLACE)
-            this.game.nodeManager.placing = false;
+            this.game.nodePlacementManager.placing = false;
         else if (this.mode === NODE_MODE_CONNECT) {
             const mg = this.game.nodeConnectionManager;
             mg.connecting = false;

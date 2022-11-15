@@ -1,0 +1,21 @@
+{
+  "title": "Level 1",
+  "description": "Change all colors by 20 on the red channel",
+  "inputs": [
+    {
+      "data-stream": [
+        0.1,
+        0.4,
+        0.5
+      ],
+      "x": 75,
+      "y": 125
+    }
+  ],
+  "outputs": [
+    {
+      "x": 425,
+      "y": 125
+    }
+  ]
+}

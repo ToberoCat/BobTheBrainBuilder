@@ -1,10 +1,11 @@
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     const game = new Game(canvas.width, canvas.height);
+    await game.init();
 
     let lastTime;
 
@@ -41,14 +42,21 @@ class Game {
         this.camera = new Camera();
         this.grid = new BackgroundGrid(this);
         this.nodeConnectionManager = new NodeConnectionManager(this);
-        this.nodeManager = new NodePlacementManager(this);
+        this.nodePlacementManager = new NodePlacementManager(this);
         this.nodeManagerButtons = new NodeManagementButton(this);
+
+        this.level = new Level(this);
+        this.simulation = new Simulator(this);
 
         document.addEventListener("mousedown", e => this.emitEvent("mousedown", e));
         document.addEventListener("mouseup", e => this.emitEvent("mouseup", e));
         document.addEventListener("wheel", event => this.emitEvent("wheel", event));
         document.addEventListener("mousemove", e => this.emitEvent("mousemove", e));
         document.addEventListener("keydown", e => this.emitEvent("keydown", e));
+    }
+
+    async init() {
+        await this.level.loadLevel("first-level");
     }
 
     emitEvent(event, data) {
