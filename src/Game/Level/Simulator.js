@@ -18,9 +18,14 @@ class ProcessableData {
     constructor(r, g, b, x, y) {
         this.x = x;
         this.y = y;
+
         this.r = r;
         this.g = g;
         this.b = b;
+
+        this.finalR = r;
+        this.finalG = g;
+        this.finalB = b;
     }
 
     draw(ctx, zoom, camera, d=true) {

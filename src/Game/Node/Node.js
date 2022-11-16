@@ -38,9 +38,9 @@ class Node {
         data.x = this.x;
         data.y = this.y;
 
-        this.state.r += data.r;
-        this.state.g += data.g;
-        this.state.b += data.b;
+        this.state.r += data.finalR;
+        this.state.g += data.finalG;
+        this.state.b += data.finalB;
 
         this.dataStream.push(data);
     }
@@ -61,9 +61,9 @@ class Node {
 
             while (this.dataStream.length > 0) {
                 const data = this.dataStream.pop();
-                sumR += data.r;
-                sumG += data.g;
-                sumB += data.b;
+                sumR += data.finalR;
+                sumG += data.finalG;
+                sumB += data.finalB;
             }
 
             if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)

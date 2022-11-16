@@ -39,7 +39,7 @@ class NodeConnectionManager extends GameElement {
             if (this.destination == null)
                 return false;
 
-            const weight = 1;
+            const weight = {r: Math.random(), g: 2, b: Math.random()};
             const connection = new Connection(this.game, this.startNode, this.destination, weight);
             this.startNode.outputConnections.push(connection);
             this.destination.inputConnections.push(connection);
@@ -120,6 +120,10 @@ class Connection {
         data.x = this.start.x;
         data.y = this.start.y;
 
+        data.finalR = data.r * this.weight.r;
+        data.finalG = data.g * this.weight.g;
+        data.finalB = data.b * this.weight.b;
+
         this.dataStream.push(data);
     }
 
@@ -140,6 +144,11 @@ class Connection {
         this.dataStream.forEach(data => {
             data.x -= this.direction.x * SPEED * deltaTime;
             data.y -= this.direction.y * SPEED * deltaTime;
+
+            data.r = lerp(data.r, data.finalR, deltaTime);
+            data.g = lerp(data.g, data.finalG, deltaTime);
+            data.b = lerp(data.b, data.finalB, deltaTime);
+
             if (this.game.nodePlacementManager.circleIntersect(
                 data.x,
                 data.y,

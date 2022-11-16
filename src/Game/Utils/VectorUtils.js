@@ -24,3 +24,16 @@ function multiplyVec(object, x, y) {
         y: object.y * y
     }
 }
+
+function lerpColor(start, end, time) {
+    return {
+        r: lerp(start.r, end.r, time),
+        g: lerp(start.g, end.g, time),
+        b: lerp(start.b, end.b, time),
+    }
+}
+
+
+function lerp(start, end, time) {
+    return (1 - time) * start + time * end;
+}
