@@ -17,6 +17,7 @@ window.addEventListener("load", async () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         game.update(deltaTime);
         game.draw(ctx);
+        game.lateUpdate(ctx);
         lastTime = now;
         requestAnimationFrame(animate);
     }
@@ -77,6 +78,10 @@ class Game {
     draw(ctx) {
         this.elements.forEach(listener => listener.draw(ctx));
     }
+
+    lateUpdate(ctx) {
+        this.elements.forEach(listener => listener.lateDraw(ctx));
+    }
 }
 
 class GameElement {
@@ -109,6 +114,10 @@ class GameElement {
     }
 
     draw(ctx) {
+
+    }
+
+    lateDraw(ctx) {
 
     }
 }

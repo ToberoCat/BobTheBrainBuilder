@@ -3,10 +3,12 @@
   "description": "Change all colors by 20 on the red channel",
   "inputs": [
     {
-      "data-stream": [
-        0.1,
-        0.4,
-        0.5
+      "dataStream": [
+        {
+          "r": 0,
+          "g": 0,
+          "b": 255
+        }
       ],
       "x": 75,
       "y": 125

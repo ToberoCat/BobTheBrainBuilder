@@ -10,20 +10,58 @@ const NODE_CONNECTION_MODE_INPUT = 1;
 const NODE_CONNECTION_MODE_OUTPUT = 2;
 
 class Node {
-    constructor(x, y) {
+    constructor(game, x, y) {
         this.x = x;
         this.y = y;
         this.renderX = 0;
         this.renderY = 0;
         this.inputConnections = [];
         this.outputConnections = [];
+        this.dataStream = [];
+        this.game = game;
 
         this.setMode(NODE_CONNECTION_MODE_BOTH);
+    }
+
+    getClampedPosition() {
+        return {
+            x: Math.floor(this.x / CLAMP_SIZE) * CLAMP_SIZE,
+            y: Math.floor(this.y / CLAMP_SIZE) * CLAMP_SIZE
+        }
+    }
+
+    processStreamable(data) {
+        this.addStreamable(data);
+    }
+
+    addStreamable(data) {
+        data.x = this.x;
+        data.y = this.y;
+
+        this.dataStream.push(data);
+    }
+
+    removeStreamable(data) {
+        const index = this.dataStream.indexOf(data);
+        if (index <= -1)
+            return;
+
+        this.dataStream.splice(index, 1);
     }
 
     setMode(mode) {
         this.nodeMode = mode;
         this.color = getColorByMode(mode);
+    }
+
+    update(deltaTime) {
+        if (!this.game.simulation.simulating) return;
+        if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT) return;
+
+        while (this.dataStream.length > 0) {
+            const data = this.dataStream.pop();
+            this.outputConnections.forEach(x => x.addStreamable(data.clone()));
+        }
     }
 
     draw(camera, ctx) {
@@ -41,6 +79,8 @@ class Node {
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
+
+        this.dataStream.forEach(x => x.draw(ctx, camera.zoom, camera));
     }
 
     adjustPosition(camera) {

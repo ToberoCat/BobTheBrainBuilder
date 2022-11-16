@@ -72,7 +72,7 @@ class NodePlacementManager extends GameElement {
     }
 
     createNodeAt(x, y) {
-        const node = new Node(x, y);
+        const node = new Node(this.game, x, y);
         node.adjustPosition(this.game.camera);
         this.nodes.push(node);
 
@@ -93,6 +93,10 @@ class NodePlacementManager extends GameElement {
 
     getFillColor(x, y) {
         return this.isOccupied(x, y) ? "#842323" : "#224914";
+    }
+
+    update(deltaTime) {
+        this.nodes.forEach(node => node.update(deltaTime));
     }
 
     draw(ctx) {

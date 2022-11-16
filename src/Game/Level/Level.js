@@ -10,13 +10,23 @@ class Level {
 
 
         this.loadedLevel.inputs.forEach(input => {
-            input["node"] = this.game.nodePlacementManager.createNodeAt(input.x, input.y);
-            input["node"].setMode(NODE_CONNECTION_MODE_INPUT);
+            const node = this.game.nodePlacementManager.createNodeAt(input.x, input.y);
+            input["node"] = node;
+            node.setMode(NODE_CONNECTION_MODE_INPUT);
+            input.dataStream.forEach(streamable => node
+                .addStreamable(new ProcessableData(streamable.r, streamable.g, streamable.b, 0, 0)));
         });
 
         this.loadedLevel.outputs.forEach(output => {
             output["node"] = this.game.nodePlacementManager.createNodeAt(output.x, output.y);
             output["node"].setMode(NODE_CONNECTION_MODE_OUTPUT);
+        });
+    }
+
+    reset() {
+        this.loadedLevel.inputs.forEach(input => {
+            input.dataStream.forEach(streamable => input["node"]
+                .addStreamable(new ProcessableData(streamable.r, streamable.g, streamable.b, 0, 0)));
         });
     }
 }
