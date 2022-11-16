@@ -12,5 +12,6 @@ class SimulationButton {
     reset() {
         this.game.nodeConnectionManager.connections.forEach(conn => conn.reset());
         this.game.level.reset();
+        this.game.nodePlacementManager.nodes.forEach(node => node.reset());
     }
 }

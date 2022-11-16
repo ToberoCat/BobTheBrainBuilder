@@ -17,8 +17,8 @@ class NodeConnectionManager extends GameElement {
         if (!this.connecting || !this.startNode) return false;
 
         this.destination = this.game.nodePlacementManager.getNodeAt(
-            this.translateScreen(event.clientX),
-            this.translateScreen(event.clientY),
+            this.translateScreen(event.clientX, "X"),
+            this.translateScreen(event.clientY, "Y"),
             false
         );
 
@@ -26,8 +26,8 @@ class NodeConnectionManager extends GameElement {
             return false;
 
         this.destination = {
-            x: this.translateScreen(event.clientX),
-            y: this.translateScreen(event.clientY)
+            x: this.translateScreen(event.clientX, "X"),
+            y: this.translateScreen(event.clientY, "Y"),
         };
         return false;
     }
@@ -53,8 +53,8 @@ class NodeConnectionManager extends GameElement {
 
     selectStartNode(x, y) {
         this.startNode = this.game.nodePlacementManager.getNodeAt(
-            this.translateScreen(x),
-            this.translateScreen(y),
+            this.translateScreen(x, "X"),
+            this.translateScreen(y, "Y"),
             false
         );
         if (this.startNode == null || this.startNode.nodeMode !== NODE_CONNECTION_MODE_OUTPUT)
@@ -64,8 +64,8 @@ class NodeConnectionManager extends GameElement {
 
     selectDestination(x, y) {
         this.destination = this.game.nodePlacementManager.getNodeAt(
-            this.translateScreen(x),
-            this.translateScreen(y),
+            this.translateScreen(x, "X"),
+            this.translateScreen(y, "Y"),
             false
         );
 
@@ -73,13 +73,13 @@ class NodeConnectionManager extends GameElement {
             return;
 
         this.destination = {
-            x: this.translateScreen(x),
-            y: this.translateScreen(y)
+            x: this.translateScreen(x, "X"),
+            y: this.translateScreen(y, "Y")
         };
     }
 
-    translateScreen(screenPosition) {
-        return (screenPosition - this.game.camera.offsetY) / this.game.camera.zoom;
+    translateScreen(screenPosition, axis) {
+        return (screenPosition - this.game.camera[`offset${axis}`]) / this.game.camera.zoom;
     }
 
     update(deltaTime) {
@@ -149,7 +149,7 @@ class Connection {
                 NODE_RADIUS
             )) {
                 remove.push(data);
-                this.destination.processStreamable(data);
+                this.destination.addStreamable(data);
             }
         });
 

@@ -9,6 +9,8 @@ const NODE_CONNECTION_MODE_BOTH = 0;
 const NODE_CONNECTION_MODE_INPUT = 1;
 const NODE_CONNECTION_MODE_OUTPUT = 2;
 
+const NODE_PROCESSING_TIME = 1000;
+
 class Node {
     constructor(game, x, y) {
         this.x = x;
@@ -19,6 +21,8 @@ class Node {
         this.outputConnections = [];
         this.dataStream = [];
         this.game = game;
+        this.state = new ProcessableData(0, 0, 0, this.x, this.y);
+        this.taskId = 0;
 
         this.setMode(NODE_CONNECTION_MODE_BOTH);
     }
@@ -30,23 +34,15 @@ class Node {
         }
     }
 
-    processStreamable(data) {
-        this.addStreamable(data);
-    }
-
     addStreamable(data) {
         data.x = this.x;
         data.y = this.y;
 
+        this.state.r += data.r;
+        this.state.g += data.g;
+        this.state.b += data.b;
+
         this.dataStream.push(data);
-    }
-
-    removeStreamable(data) {
-        const index = this.dataStream.indexOf(data);
-        if (index <= -1)
-            return;
-
-        this.dataStream.splice(index, 1);
     }
 
     setMode(mode) {
@@ -58,10 +54,37 @@ class Node {
         if (!this.game.simulation.simulating) return;
         if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT) return;
 
-        while (this.dataStream.length > 0) {
-            const data = this.dataStream.pop();
-            this.outputConnections.forEach(x => x.addStreamable(data.clone()));
+        if (this.dataStream.length >= this.inputConnections.length) {
+            let sumR = 0;
+            let sumG = 0;
+            let sumB = 0;
+
+            while (this.dataStream.length > 0) {
+                const data = this.dataStream.pop();
+                sumR += data.r;
+                sumG += data.g;
+                sumB += data.b;
+            }
+
+            if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
+                this.inputConnections.push({});
+
+            this.taskId = setTimeout(() => {
+                this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(this.state.r,
+                    this.state.g,
+                    this.state.b,
+                    0,
+                    0)
+                ));
+            }, this.nodeMode === NODE_CONNECTION_MODE_INPUT ? 0 : NODE_PROCESSING_TIME);
         }
+    }
+
+    reset() {
+        if (this.nodeMode === NODE_CONNECTION_MODE_INPUT) return;
+        this.state = new ProcessableData(0, 0, 0, this.x, this.y);
+        this.dataStream.length = 0;
+        clearTimeout(this.taskId);
     }
 
     draw(camera, ctx) {
@@ -73,14 +96,27 @@ class Node {
             0,
             Math.PI * 2,
             false);
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.getColorByState();
         ctx.strokeStyle = '#1a1a1a';
         ctx.lineWidth = camera.zoom;
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
 
-        this.dataStream.forEach(x => x.draw(ctx, camera.zoom, camera));
+        if (this.nodeMode === NODE_CONNECTION_MODE_BOTH)
+            return;
+        if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
+            this.dataStream.forEach(x => x.draw(ctx, camera.zoom, camera));
+        else if (!(this.state.r === 0 && this.state.g === 0 && this.state.b === 0)) {
+            this.state.draw(ctx, camera.zoom, camera);
+        }
+    }
+
+    getColorByState() {
+        if (this.nodeMode !== NODE_CONNECTION_MODE_BOTH) return this.color;
+
+        return (this.state.r === 0 && this.state.g === 0 && this.state.b === 0) ? this.color :
+            `rgb(${this.state.r}, ${this.state.g}, ${this.state.b})`;
     }
 
     adjustPosition(camera) {
