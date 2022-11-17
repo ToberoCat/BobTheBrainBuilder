@@ -53,31 +53,28 @@ class Node {
     update(deltaTime) {
         if (!this.game.simulation.simulating) return;
         if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT) return;
+        if (this.dataStream.length < this.inputConnections.length) return;
 
-        if (this.dataStream.length >= this.inputConnections.length) {
-            let sumR = 0;
-            let sumG = 0;
-            let sumB = 0;
-
-            while (this.dataStream.length > 0) {
-                const data = this.dataStream.pop();
-                sumR += data.finalR;
-                sumG += data.finalG;
-                sumB += data.finalB;
-            }
-
-            if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
-                this.inputConnections.push({});
-
-            this.taskId = setTimeout(() => {
-                this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(this.state.r,
-                    this.state.g,
-                    this.state.b,
-                    0,
-                    0)
-                ));
-            }, this.nodeMode === NODE_CONNECTION_MODE_INPUT ? 0 : NODE_PROCESSING_TIME);
+        let sumR = 0;
+        let sumG = 0;
+        let sumB = 0;
+        while (this.dataStream.length > 0) {
+            const data = this.dataStream.pop();
+            sumR += data.finalR;
+            sumG += data.finalG;
+            sumB += data.finalB;
         }
+        if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
+            this.inputConnections.push({});
+
+        this.taskId = setTimeout(() => {
+            this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(this.state.r,
+                this.state.g,
+                this.state.b,
+                0,
+                0)
+            ));
+        }, this.nodeMode === NODE_CONNECTION_MODE_INPUT ? 0 : NODE_PROCESSING_TIME);
     }
 
     reset() {
@@ -116,7 +113,7 @@ class Node {
         if (this.nodeMode !== NODE_CONNECTION_MODE_BOTH) return this.color;
 
         return (this.state.r === 0 && this.state.g === 0 && this.state.b === 0) ? this.color :
-            `rgb(${this.state.r}, ${this.state.g}, ${this.state.b})`;
+            `rgb(${this.state.r * 255}, ${this.state.g * 255}, ${this.state.b * 255})`;
     }
 
     adjustPosition(camera) {

@@ -31,7 +31,7 @@ class ProcessableData {
     draw(ctx, zoom, camera, d=true) {
         const size = DATA_SIZE * zoom
         const halfSize = size / 2;
-        ctx.fillStyle = d ? `rgb(${this.r}, ${this.g}, ${this.b})` : "rgb(0, 0, 0)";
+        ctx.fillStyle = d ? `rgb(${this.r * 255}, ${this.g * 255}, ${this.b * 255})` : "rgb(0, 0, 0)";
         ctx.strokeStyle = '#222522';
         ctx.beginPath();
 

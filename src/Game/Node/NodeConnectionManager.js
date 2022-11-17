@@ -39,7 +39,7 @@ class NodeConnectionManager extends GameElement {
             if (this.destination == null)
                 return false;
 
-            const weight = {r: Math.random(), g: 2, b: Math.random()};
+            const weight = {r: 2, g: 2, b: 2};
             const connection = new Connection(this.game, this.startNode, this.destination, weight);
             this.startNode.outputConnections.push(connection);
             this.destination.inputConnections.push(connection);
@@ -49,6 +49,13 @@ class NodeConnectionManager extends GameElement {
             this.destination = null;
         } else this.selectStartNode(event.clientX, event.clientY);
         return false;
+    }
+
+    checkIfConnectionAllowed(start, destination) {
+        for (let i = 0; i < start.inputConnections.length; i++) {
+            const conn = start.inputConnections[i];
+            if (conn.startNode === start || conn.destination === )
+        }
     }
 
     selectStartNode(x, y) {

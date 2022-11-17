@@ -14,7 +14,7 @@ class Level {
             input["node"] = node;
             node.setMode(NODE_CONNECTION_MODE_INPUT);
             input.dataStream.forEach(streamable => node
-                .addStreamable(new ProcessableData(streamable.r, streamable.g, streamable.b, 0, 0)));
+                .addStreamable(new ProcessableData(streamable.r / 255, streamable.g / 255, streamable.b / 255, 0, 0)));
         });
 
         this.loadedLevel.outputs.forEach(output => {
