@@ -44,7 +44,7 @@ class Level extends GameElement {
         this.loadedLevel = await fetch(
             url.hostname === "localhost"
                 ? `../../res/levels/${levelId}.lvl`
-                : `../res/levels/${levelId}.lvl`)
+                : `res/levels/${levelId}.lvl`)
             .then(response => response.json());
 
 
