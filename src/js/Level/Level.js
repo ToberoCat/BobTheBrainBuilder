@@ -28,22 +28,23 @@ class Level extends GameElement {
         this.typewriter.writeLine(`You completed ${level.title}`);
     }
 
-    mouseDown(event) {
+    mouseDown() {
         if (!this.skipable || this.typewriter.isHidden())
             return false;
 
-        console.log(this.skipable);
-        if (this.typewriter.isWriting) {
+        if (this.typewriter.isWriting)
             this.typewriter.finishLine();
-            return true;
-        } else {
+        else
             this.typewriter.hideLine();
-            return true;
-        }
+        return true;
     }
 
     async loadLevel(levelId) {
-        this.loadedLevel = await fetch(`../../res/levels/${levelId}.lvl`)
+        const url = new URL(document.location);
+        this.loadedLevel = await fetch(
+            url.hostname === "localhost"
+                ? `../../res/levels/${levelId}.lvl`
+                : `../res/levels/${levelId}.lvl`)
             .then(response => response.json());
 
 
