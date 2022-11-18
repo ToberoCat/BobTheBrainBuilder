@@ -44,11 +44,7 @@ class Node {
         this.state.b += data.finalB;
 
         this.dataStream.push(data);
-        if (this.checkIfDeadLocked())
-            this.game.emitEvent("levelfailed", {
-                reason: NODES_ARE_DEADLOCKED,
-                level: this.game.level.loadedLevel
-            });
+
         if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT && this.dataStream.length >= this.inputConnections.length)
             this.game.level.receiveOutput(this.state);
     }
@@ -59,6 +55,7 @@ class Node {
 
     checkIfDeadLocked() {
         for (let connection of this.game.nodeConnectionManager.connections) {
+            console.log(connection.dataStream.length);
             if (connection.dataStream.length !== 0) return false;
         }
 

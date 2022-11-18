@@ -11,17 +11,35 @@ class Level extends GameElement {
         this.loadedLevel = null;
         this.currentOutputs = [];
         this.typewriter = new Typewriter(document.getElementById("level-meta-data"));
+        this.skipable = false;
 
         this.addEventListener("levelcompleted", this.completedLevel);
         this.addEventListener("levelfailed", this.failedLevel);
+        this.addEventListener("mousedown", this.mouseDown);
     }
 
     failedLevel(failureInfo) {
-        this.typewriter.writeLine(`Something went wrong. ${failureInfo.reason}`);
+        this.game.simulation.stopSimulation();
+        this.typewriter.writeLine(translateMessage(failureInfo.reason));
     }
 
     completedLevel(level) {
+        this.game.simulation.stopSimulation();
         this.typewriter.writeLine(`You completed ${level.title}`);
+    }
+
+    mouseDown(event) {
+        if (!this.skipable || this.typewriter.isHidden())
+            return false;
+
+        console.log(this.skipable);
+        if (this.typewriter.isWriting) {
+            this.typewriter.finishLine();
+            return true;
+        } else {
+            this.typewriter.hideLine();
+            return true;
+        }
     }
 
     async loadLevel(levelId) {
@@ -48,7 +66,8 @@ class Level extends GameElement {
     displayMeta(level) {
         this.typewriter.writeLine(level.title)
             .then(async () => {
-                await this.typewriter.wait(3000);
+                await this.typewriter.wait(2000);
+                this.skipable = true;
                 await this.typewriter.writeLine(level.description);
             });
     }
@@ -98,4 +117,18 @@ class Level extends GameElement {
                 .addStreamable(this.createNewStreamableData(streamable)));
         });
     }
+}
+
+function translateMessage(error) {
+    switch (error) {
+        case COLORS_DONT_MATCH:
+            return "Your result is not what the output should look like";
+        case INPUT_ISNT_CONNECTED_TO_ANYTHING:
+            return "You haven't connected the input to anything yet";
+        case NODES_ARE_DEADLOCKED:
+            return "You have created a infinite waiting state. This means that some nodes are waiting on node inputs that rely on these outputs";
+        default:
+            return "This error code isn't know to me: " + error;
+    }
+
 }

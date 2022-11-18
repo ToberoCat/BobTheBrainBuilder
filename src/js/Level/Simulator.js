@@ -8,9 +8,21 @@ class Simulator extends GameElement {
         new SimulationButton(this, game);
     }
 
-    draw(ctx) {
-        const level = this.game.level.loadedLevel;
-        if (!level) return;
+    stopSimulation() {
+        this.simulating = false;
+        document.getElementById('playbutton').src = "res/buttons/simulation-start.svg";
+        this.reset();
+    }
+
+    reset() {
+        this.game.nodeConnectionManager.connections.forEach(conn => conn.reset());
+        this.game.nodePlacementManager.nodes.forEach(node => {
+            if (node.nodeMode === NODE_CONNECTION_MODE_INPUT)
+                node.inputConnections.length = 0;
+
+            node.reset()
+        });
+        this.game.level.reset();
     }
 }
 

@@ -10,20 +10,8 @@ class SimulationButton {
             if (!state)
                 playbutton.src = "res/buttons/simulation-stop.svg";
             else {
-                playbutton.src = "res/buttons/simulation-start.svg";
-                this.reset();
+                this.simulation.stopSimulation();
             }
         });
-    }
-
-    reset() {
-        this.game.nodeConnectionManager.connections.forEach(conn => conn.reset());
-        this.game.nodePlacementManager.nodes.forEach(node => {
-            if (node.nodeMode === NODE_CONNECTION_MODE_INPUT)
-                node.inputConnections.length = 0;
-
-            node.reset()
-        });
-        this.game.level.reset();
     }
 }

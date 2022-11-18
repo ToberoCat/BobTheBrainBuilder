@@ -182,6 +182,11 @@ class Connection {
         });
 
         remove.forEach(x => this.removeStreamable(x));
+        if (this.destination.checkIfDeadLocked())
+            this.game.emitEvent("levelfailed", {
+                reason: NODES_ARE_DEADLOCKED,
+                level: this.game.level.loadedLevel
+            });
     }
 
     draw(ctx, camera) {
