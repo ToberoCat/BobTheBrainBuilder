@@ -1,23 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-y: hidden;
-    overflow-x: hidden;
-}
-
-.unselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-body {
-    background-color: #2E393B;
-}
-
+/*<editor-fold desc="Image Button">*/
 .image-button {
     position: absolute;
 
@@ -30,6 +11,8 @@ body {
 .image-button:active {
     filter: brightness(.9);
 }
+
+/*</editor-fold>*/
 
 #placenode {
     top: 10px;
@@ -54,11 +37,4 @@ body {
     left: 10px;
     width: 64px;
     height: 64px;
-}
-
-#canvas {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background: #3F4948;
 }

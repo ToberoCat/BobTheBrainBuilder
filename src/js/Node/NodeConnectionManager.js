@@ -1,4 +1,4 @@
-const SPEED = 30;
+const SPEED = 100; // 30
 
 class NodeConnectionManager extends GameElement {
     constructor(game) {
@@ -39,23 +39,35 @@ class NodeConnectionManager extends GameElement {
             if (this.destination == null)
                 return false;
 
-            const weight = {r: 2, g: 2, b: 2};
+            if (this.isInvalidConnection(this.startNode, this.destination))
+                return;
+
+            const weight = {r: 1, g: 1, b: 1};
             const connection = new Connection(this.game, this.startNode, this.destination, weight);
             this.startNode.outputConnections.push(connection);
             this.destination.inputConnections.push(connection);
             this.connections.push(connection);
-
             this.startNode = null;
             this.destination = null;
         } else this.selectStartNode(event.clientX, event.clientY);
         return false;
     }
 
-    checkIfConnectionAllowed(start, destination) {
+    isInvalidConnection(start, destination) {
+        if (start === destination) return true;
+
+        for (let i = 0; i < start.outputConnections.length; i++) {
+            const conn = start.outputConnections[i];
+            if (conn.start === start && conn.destination === destination)
+                return true;
+        }
+
         for (let i = 0; i < start.inputConnections.length; i++) {
             const conn = start.inputConnections[i];
-            if (conn.startNode === start || conn.destination === )
+            if (conn.destination === start && conn.start === destination)
+                return true;
         }
+        return false;
     }
 
     selectStartNode(x, y) {

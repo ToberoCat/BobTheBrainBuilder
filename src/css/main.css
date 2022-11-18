@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #2E393B;
+}
+
+.unselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#canvas {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #3F4948;
+}

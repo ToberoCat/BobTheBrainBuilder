@@ -1,12 +1,17 @@
 {
   "title": "Level 1",
-  "description": "Change all colors by 20 on the red channel",
+  "description": "Transport the data into the output without modifying it",
+  "tips": [
+    "Have you tried to connect the input into the output?",
+    "The connection the data travels can be modified by clicking on it",
+    "You need a super duper extremely bright color to solve it"
+  ],
   "inputs": [
     {
       "dataStream": [
         {
-          "r": 30,
-          "g": 5,
+          "r": 0,
+          "g": 0,
           "b": 255
         }
       ],
@@ -18,6 +23,13 @@
     {
       "x": 425,
       "y": 125
+    }
+  ],
+  "expectedOutput": [
+    {
+      "r": 0,
+      "g": 0,
+      "b": 255
     }
   ]
 }

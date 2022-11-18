@@ -1,0 +1,21 @@
+#level-meta-data {
+    position: absolute;
+    font-family: monospace;
+    color: #fff;
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 45px;
+    vertical-align: middle;
+}
+
+#caret {
+    border-right: .05em solid;
+    animation: caret .5s steps(1) infinite;
+}
+
+@keyframes caret {
+    50% {
+        border-color: transparent;
+    }
+}

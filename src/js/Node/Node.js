@@ -35,14 +35,37 @@ class Node {
     }
 
     addStreamable(data) {
-        data.x = this.x;
-        data.y = this.y;
+        const clamped = this.getClampedPosition();
+        data.x = clamped.x;
+        data.y = clamped.y;
 
         this.state.r += data.finalR;
         this.state.g += data.finalG;
         this.state.b += data.finalB;
 
         this.dataStream.push(data);
+        if (this.checkIfDeadLocked())
+            this.game.emitEvent("levelfailed", {
+                reason: NODES_ARE_DEADLOCKED,
+                level: this.game.level.loadedLevel
+            });
+        if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT && this.dataStream.length >= this.inputConnections.length)
+            this.game.level.receiveOutput(this.state);
+    }
+
+    isWaitingForInputs() {
+        return this.dataStream.length < this.inputConnections.length;
+    }
+
+    checkIfDeadLocked() {
+        for (let connection of this.game.nodeConnectionManager.connections) {
+            if (connection.dataStream.length !== 0) return false;
+        }
+
+        for (let node of this.game.nodePlacementManager.nodes) {
+            if (!node.isWaitingForInputs()) return false;
+        }
+        return true;
     }
 
     setMode(mode) {
@@ -50,11 +73,20 @@ class Node {
         this.color = getColorByMode(mode);
     }
 
-    update(deltaTime) {
+    update() {
         if (!this.game.simulation.simulating) return;
         if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT) return;
-        if (this.dataStream.length < this.inputConnections.length) return;
+        if (this.isWaitingForInputs()) return;
 
+        if (this.outputConnections.length === 0) {
+            if (this.nodeMode === NODE_CONNECTION_MODE_INPUT) {
+                this.game.emitEvent("levelfailed", {
+                    reason: INPUT_ISNT_CONNECTED_TO_ANYTHING,
+                    level: this.game.level.loadedLevel
+                });
+            }
+            return;
+        }
         let sumR = 0;
         let sumG = 0;
         let sumB = 0;
@@ -68,7 +100,8 @@ class Node {
             this.inputConnections.push({});
 
         this.taskId = setTimeout(() => {
-            this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(this.state.r,
+            this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(
+                this.state.r,
                 this.state.g,
                 this.state.b,
                 0,
@@ -78,7 +111,6 @@ class Node {
     }
 
     reset() {
-        if (this.nodeMode === NODE_CONNECTION_MODE_INPUT) return;
         this.state = new ProcessableData(0, 0, 0, this.x, this.y);
         this.dataStream.length = 0;
         clearTimeout(this.taskId);
