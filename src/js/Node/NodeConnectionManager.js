@@ -1,9 +1,4 @@
 const DEFAULT_SPEED = 30;
-const DOUBLE_SPEED = 100;
-const SONIC_SPEED = 200;
-const SLOWMO_SPEED = 1;
-const PAUSE_SPEED = 0;
-
 let SPEED = DEFAULT_SPEED;
 let FAILED_SENT = false;
 

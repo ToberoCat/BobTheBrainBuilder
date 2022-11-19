@@ -12,7 +12,6 @@ class Level extends GameElement {
         this.loadedLevel = null;
         this.currentOutputs = [];
         this.typewriter = new Typewriter(document.getElementById("level-meta-data"));
-        this.skipable = false;
 
         this.addEventListener("levelcompleted", this.completedLevel);
         this.addEventListener("levelfailed", this.failedLevel);
@@ -31,7 +30,7 @@ class Level extends GameElement {
 
     keyDown(event) {
         if (event.keyCode !== 13) return false;
-        if (!this.skipable || this.typewriter.isHidden())
+        if (this.typewriter.isHidden())
             return false;
 
         if (this.typewriter.isWriting)
@@ -70,7 +69,6 @@ class Level extends GameElement {
         this.typewriter.writeLine(level.title)
             .then(async () => {
                 await this.typewriter.wait(2000);
-                this.skipable = true;
                 await this.typewriter.writeLine(level.description);
             });
     }

@@ -6,29 +6,14 @@ class Simulator extends GameElement {
         super(game);
         this.simulating = false;
         this.simulationButton = new SimulationButton(this, game);
-        this.addEventListener("keydown", this.keyDown);
-    }
-
-    keyDown(e) {
-        if (e.keyCode === 49) {
-            SPEED = DEFAULT_SPEED;
-        } else if (e.keyCode === 50) {
-            SPEED = DOUBLE_SPEED;
-        } else if (e.keyCode === 51) {
-            SPEED = SONIC_SPEED;
-        } else if (e.keyCode === 52) {
-            SPEED = SLOWMO_SPEED;
-        } else if (e.keyCode === 48) {
-            SPEED = PAUSE_SPEED;
-        } else {
-            this.simulationButton.keyDown(e);
-        }
-
+        this.addEventListener("keydown", this.simulationButton.keyDown);
     }
 
     stopSimulation() {
+        this.simulationButton.speedSlider.style.animation = "fadeOut .2s ease-in both";
+        setTimeout(() => this.simulationButton.speedSlider.style.visibility = "hidden", 200);
         this.simulating = false;
-        document.getElementById('playbutton').src = "res/buttons/simulation-start.svg";
+        document.getElementById('playbutton').src = "res/buttons/speed/default-speed-selected.svg";
         this.reset();
     }
 

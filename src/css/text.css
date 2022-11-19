@@ -13,9 +13,3 @@
     border-right: .05em solid;
     animation: caret .5s steps(1) infinite;
 }
-
-@keyframes caret {
-    50% {
-        border-color: transparent;
-    }
-}

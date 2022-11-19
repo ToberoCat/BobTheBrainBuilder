@@ -2,6 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>Bob the brain builder</title>
         <link rel="icon" type="image/x-icon" href="res/favicon/icon.png">
 
@@ -9,6 +11,7 @@
         <link rel="stylesheet" href="src/css/main.css">
         <link rel="stylesheet" href="src/css/buttons.css">
         <link rel="stylesheet" href="src/css/text.css">
+        <link rel="stylesheet" href="src/css/animations.css">
 
 
         <!-- Game Handler & Utils -->
@@ -50,7 +53,10 @@
                src="res/buttons/cancel.svg"
                alt="Cancel this action">
         <input id="playbutton" class="image-button unselect" type="image" name="Play Button"
-               src="res/buttons/simulation-start.svg"
+               src="res/buttons/speed/default-speed-selected.svg"
                alt="Play simulation">
+        <div id="speed" class="slider-container unselect">
+            <input type="range" id="speed-slider" class="slider" min="0" max="200" value="30">
+        </div>
     </body>
 </html>
