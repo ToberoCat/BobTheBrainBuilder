@@ -16,11 +16,11 @@ class SimulationButton {
 
         if (!state) {
             this.playbutton.src = "res/buttons/speed/simulation-stop-deselected.svg";
-            this.speedSlider.style.visibility = "visible";
-            this.speedSlider.style.animation = "fadeIn .2s ease-in both";
-            this.scanNodes();
-        }
-        else {
+            if (this.scanNodes()) {
+                this.speedSlider.style.visibility = "visible";
+                this.speedSlider.style.animation = "fadeIn .2s ease-in both";
+            }
+        } else {
             this.simulation.stopSimulation();
         }
     }
@@ -33,7 +33,7 @@ class SimulationButton {
                         reason: INPUT_ISNT_CONNECTED_TO_ANYTHING,
                         level: this.game.level.loadedLevel
                     });
-                    return;
+                    return false;
                 }
             } else if (node.nodeMode === NODE_CONNECTION_MODE_OUTPUT) {
                 if (node.inputConnections.length === 0) {
@@ -41,10 +41,11 @@ class SimulationButton {
                         reason: OUTPUT_ISNT_CONNECTED_TO_ANYTHING,
                         level: this.game.level.loadedLevel
                     });
-                    return;
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     keyDown(event) {
