@@ -4,6 +4,7 @@ const COLOR_COMPARISON_EPS = 0.0001;
 const COLORS_DONT_MATCH = 0;
 const INPUT_ISNT_CONNECTED_TO_ANYTHING = 1;
 const NODES_ARE_DEADLOCKED = 2;
+const OUTPUT_ISNT_CONNECTED_TO_ANYTHING = 3;
 
 class Level extends GameElement {
     constructor(game) {
@@ -15,7 +16,7 @@ class Level extends GameElement {
 
         this.addEventListener("levelcompleted", this.completedLevel);
         this.addEventListener("levelfailed", this.failedLevel);
-        this.addEventListener("mousedown", this.mouseDown);
+        this.addEventListener("keydown", this.keyDown);
     }
 
     failedLevel(failureInfo) {
@@ -28,7 +29,8 @@ class Level extends GameElement {
         this.typewriter.writeLine(`You completed ${level.title}`);
     }
 
-    mouseDown() {
+    keyDown(event) {
+        if (event.keyCode !== 13) return false;
         if (!this.skipable || this.typewriter.isHidden())
             return false;
 
@@ -128,6 +130,8 @@ function translateMessage(error) {
             return "You haven't connected the input to anything yet";
         case NODES_ARE_DEADLOCKED:
             return "You have created a infinite waiting state. This means that some nodes are waiting on node inputs that rely on these outputs";
+        case OUTPUT_ISNT_CONNECTED_TO_ANYTHING:
+            return "You haven't connected the output to anything yet";
         default:
             return "This error code isn't know to me: " + error;
     }

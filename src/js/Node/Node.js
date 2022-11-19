@@ -9,7 +9,7 @@ const NODE_CONNECTION_MODE_BOTH = 0;
 const NODE_CONNECTION_MODE_INPUT = 1;
 const NODE_CONNECTION_MODE_OUTPUT = 2;
 
-const NODE_PROCESSING_TIME = 1000;
+const NODE_PROCESSING_TIME = 30000;
 
 class Node {
     constructor(game, x, y) {
@@ -22,7 +22,7 @@ class Node {
         this.dataStream = [];
         this.game = game;
         this.state = new ProcessableData(0, 0, 0, this.x, this.y);
-        this.taskId = 0;
+        this.taskId = null;
 
         this.setMode(NODE_CONNECTION_MODE_BOTH);
     }
@@ -39,9 +39,9 @@ class Node {
         data.x = clamped.x;
         data.y = clamped.y;
 
-        this.state.r += data.finalR;
-        this.state.g += data.finalG;
-        this.state.b += data.finalB;
+        this.state.r = Math.min(this.state.r + data.finalR, 1);
+        this.state.g = Math.min(this.state.g + data.finalG, 1);
+        this.state.b = Math.min(this.state.b + data.finalB, 1);
 
         this.dataStream.push(data);
 
@@ -55,13 +55,21 @@ class Node {
 
     checkIfDeadLocked() {
         for (let connection of this.game.nodeConnectionManager.connections) {
-            console.log(connection.dataStream.length);
             if (connection.dataStream.length !== 0) return false;
         }
 
         for (let node of this.game.nodePlacementManager.nodes) {
-            if (!node.isWaitingForInputs()) return false;
+            if (node.nodeMode === NODE_CONNECTION_MODE_INPUT) {
+                if (node.dataStream.length !== 0) return false;
+            } else if (node.nodeMode === NODE_CONNECTION_MODE_BOTH) {
+                if (node.inputConnections.length === 0 ||
+                    node.outputConnections.length === 0)
+                    continue;
+                if (node.taskId != null || !node.isWaitingForInputs())
+                    return false;
+            }
         }
+
         return true;
     }
 
@@ -74,28 +82,15 @@ class Node {
         if (!this.game.simulation.simulating) return;
         if (this.nodeMode === NODE_CONNECTION_MODE_OUTPUT) return;
         if (this.isWaitingForInputs()) return;
-
-        if (this.outputConnections.length === 0) {
-            if (this.nodeMode === NODE_CONNECTION_MODE_INPUT) {
-                this.game.emitEvent("levelfailed", {
-                    reason: INPUT_ISNT_CONNECTED_TO_ANYTHING,
-                    level: this.game.level.loadedLevel
-                });
-            }
+        if (this.inputConnections.length === 0) {
+            if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
+                this.inputConnections.push({});
             return;
         }
-        let sumR = 0;
-        let sumG = 0;
-        let sumB = 0;
-        while (this.dataStream.length > 0) {
-            const data = this.dataStream.pop();
-            sumR += data.finalR;
-            sumG += data.finalG;
-            sumB += data.finalB;
-        }
-        if (this.nodeMode === NODE_CONNECTION_MODE_INPUT)
-            this.inputConnections.push({});
+        if (this.outputConnections.length === 0)
+            return;
 
+        this.dataStream.length = 0;
         this.taskId = setTimeout(() => {
             this.outputConnections.forEach(x => x.addStreamable(new ProcessableData(
                 this.state.r,
@@ -104,13 +99,15 @@ class Node {
                 0,
                 0)
             ));
-        }, this.nodeMode === NODE_CONNECTION_MODE_INPUT ? 0 : NODE_PROCESSING_TIME);
+            this.taskId = null;
+        }, this.nodeMode === NODE_CONNECTION_MODE_INPUT ? 0 : NODE_PROCESSING_TIME / SPEED);
     }
 
     reset() {
         this.state = new ProcessableData(0, 0, 0, this.x, this.y);
         this.dataStream.length = 0;
         clearTimeout(this.taskId);
+        this.taskId = null;
     }
 
     draw(camera, ctx) {

@@ -1,4 +1,11 @@
-const SPEED = 100; // 30
+const DEFAULT_SPEED = 30;
+const DOUBLE_SPEED = 100;
+const SONIC_SPEED = 200;
+const SLOWMO_SPEED = 1;
+const PAUSE_SPEED = 0;
+
+let SPEED = DEFAULT_SPEED;
+let FAILED_SENT = false;
 
 class NodeConnectionManager extends GameElement {
     constructor(game) {
@@ -182,11 +189,19 @@ class Connection {
         });
 
         remove.forEach(x => this.removeStreamable(x));
-        if (this.destination.checkIfDeadLocked())
+        if (!this.game.simulation.simulating || !this.destination.checkIfDeadLocked())
+            return;
+
+        console.log(FAILED_SENT);
+        if (FAILED_SENT)
+            return;
+        FAILED_SENT = true;
+        setTimeout(() => {
             this.game.emitEvent("levelfailed", {
                 reason: NODES_ARE_DEADLOCKED,
                 level: this.game.level.loadedLevel
             });
+        }, 1000);
     }
 
     draw(ctx, camera) {

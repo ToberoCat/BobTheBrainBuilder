@@ -5,7 +5,25 @@ class Simulator extends GameElement {
     constructor(game) {
         super(game);
         this.simulating = false;
-        new SimulationButton(this, game);
+        this.simulationButton = new SimulationButton(this, game);
+        this.addEventListener("keydown", this.keyDown);
+    }
+
+    keyDown(e) {
+        if (e.keyCode === 49) {
+            SPEED = DEFAULT_SPEED;
+        } else if (e.keyCode === 50) {
+            SPEED = DOUBLE_SPEED;
+        } else if (e.keyCode === 51) {
+            SPEED = SONIC_SPEED;
+        } else if (e.keyCode === 52) {
+            SPEED = SLOWMO_SPEED;
+        } else if (e.keyCode === 48) {
+            SPEED = PAUSE_SPEED;
+        } else {
+            this.simulationButton.keyDown(e);
+        }
+
     }
 
     stopSimulation() {
