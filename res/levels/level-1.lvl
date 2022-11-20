@@ -2,6 +2,7 @@
   "title": "Level 1",
   "description": "Transport the data into the output without modifying it",
   "next-level": "level-2",
+  "type": "color",
   "tips": [
     "Have you tried to connect the input into the output?",
     "The connection the data travels can be modified by clicking on it",
@@ -11,6 +12,7 @@
     {
       "dataStream": [
         {
+          "type": "color",
           "r": 0,
           "g": 0,
           "b": 255

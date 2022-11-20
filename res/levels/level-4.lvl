@@ -3,10 +3,12 @@
   "description": "Now I need yellow and purple",
   "tips": [],
   "next-level": "level-4",
+  "type": "color",
   "inputs": [
     {
       "dataStream": [
         {
+          "type": "color",
           "r": 255,
           "g": 0,
           "b": 0
@@ -18,6 +20,7 @@
     {
       "dataStream": [
         {
+          "type": "color",
           "r": 0,
           "g": 255,
           "b": 0
@@ -29,6 +32,7 @@
     {
       "dataStream": [
         {
+          "type": "color",
           "r": 0,
           "g": 0,
           "b": 255

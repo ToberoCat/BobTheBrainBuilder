@@ -1,17 +1,15 @@
 {
-  "title": "Level 3",
-  "description": "Give me some yellow and red",
+  "title": "Level 5",
+  "description": "Now I need yellow and purple",
   "tips": [],
-  "next-level": "level-4",
+  "next-level": "level-5",
   "type": "color",
   "inputs": [
     {
       "dataStream": [
         {
-          "type": "color",
-          "r": 0,
-          "g": 255,
-          "b": 255
+          "type": "image",
+          "name": "level-images/level-5-0.png"
         }
       ],
       "x": 75,
@@ -20,10 +18,20 @@
     {
       "dataStream": [
         {
-          "type": "color",
-          "r": 255,
-          "g": 0,
+          "r": 0,
+          "g": 255,
           "b": 0
+        }
+      ],
+      "x": 75,
+      "y": 125
+    },
+    {
+      "dataStream": [
+        {
+          "r": 0,
+          "g": 0,
+          "b": 255
         }
       ],
       "x": 75,
@@ -49,7 +57,7 @@
     {
       "r": 255,
       "g": 0,
-      "b": 0
+      "b": 255
     }
   ]
 }

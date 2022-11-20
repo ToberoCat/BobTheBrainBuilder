@@ -3,10 +3,12 @@
   "description": "Extract the red and blue color from the data",
   "tips": [],
   "next-level": "level-3",
+  "type": "color",
   "inputs": [
     {
       "dataStream": [
         {
+          "type": "color",
           "r": 255,
           "g": 0,
           "b": 255
