@@ -6,7 +6,11 @@ class Simulator extends GameElement {
         super(game);
         this.simulating = false;
         this.simulationButton = new SimulationButton(this, game);
-        this.addEventListener("keydown", this.simulationButton.keyDown);
+        this.addEventListener("keydown", event => {
+            if (event.keyCode !== 32) return false;
+            this.simulationButton.changeState();
+            return true;
+        });
     }
 
     stopSimulation() {

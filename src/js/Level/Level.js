@@ -78,25 +78,28 @@ class Level extends GameElement {
         if (this.currentOutputs.length !== this.loadedLevel.expectedOutput.length)
             return;
 
-        for (let output in this.loadedLevel.expectedOutput) {
-            output = this.loadedLevel.expectedOutput[output];
+        let matched = 0;
+        for (let output of this.loadedLevel.expectedOutput) {
             const r = output.r / 255;
             const g = output.g / 255;
             const b = output.b / 255;
 
             for (let i = 0; i < this.currentOutputs.length; i++) {
                 const o = this.currentOutputs[i];
-                if (!this.areSameColor(r, g, b, o.r, o.g, o.b)) {
-                    this.emitEvent("levelfailed", {
-                        reason: COLORS_DONT_MATCH,
-                        level: this.loadedLevel
-                    });
-                    return;
+                if (this.areSameColor(r, g, b, o.r, o.g, o.b)) {
+                    matched++;
+                    break;
                 }
             }
         }
 
-        this.emitEvent("levelcompleted", this.loadedLevel);
+        if (matched === this.loadedLevel.expectedOutput.length) {
+            this.emitEvent("levelcompleted", this.loadedLevel);
+        } else
+            this.emitEvent("levelfailed", {
+                reason: COLORS_DONT_MATCH,
+                level: this.loadedLevel
+            });
     }
 
     areSameColor(eR, eG, eB, vR, vG, vB) {

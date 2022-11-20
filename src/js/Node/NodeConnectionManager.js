@@ -1,4 +1,6 @@
 const DEFAULT_SPEED = 30;
+const CONNECTION_EPS = 5;
+
 let SPEED = DEFAULT_SPEED;
 let FAILED_SENT = false;
 
@@ -103,6 +105,14 @@ class NodeConnectionManager extends GameElement {
         return (screenPosition - this.game.camera[`offset${axis}`]) / this.game.camera.zoom;
     }
 
+    getConnectionAt(x, y) {
+        for (let connection of this.connections) {
+            if (connection.overlaps(x, y))
+                return connection;
+        }
+        return null;
+    }
+
     update(deltaTime) {
         this.connections.forEach(conn => conn.runSimulation(deltaTime));
     }
@@ -135,6 +145,13 @@ class Connection {
         this.cDestination = destination.getClampedPosition();
 
         this.direction = direction(this.cStart.x, this.cStart.y, this.cDestination.x, this.cDestination.y);
+        this.slope = (this.cStart.y - this.cDestination.y) / (this.cStart.x - this.cDestination.x);
+        this.offset = this.cStart.y - (this.cStart.x * this.slope);
+    }
+
+    overlaps(x, y) {
+        const calcY = x * this.slope + this.offset;
+        return Math.abs(y - calcY) < CONNECTION_EPS;
     }
 
     addStreamable(data) {
@@ -187,7 +204,6 @@ class Connection {
         if (!this.game.simulation.simulating || !this.destination.checkIfDeadLocked())
             return;
 
-        console.log(FAILED_SENT);
         if (FAILED_SENT)
             return;
         FAILED_SENT = true;
@@ -200,7 +216,7 @@ class Connection {
     }
 
     draw(ctx, camera) {
-        drawConnection(ctx, camera, this.start, this.destination);
+        drawConnection(ctx, camera, this.cStart, this.cDestination);
     }
 
     lateDraw(ctx, camera) {

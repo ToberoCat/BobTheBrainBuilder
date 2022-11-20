@@ -47,10 +47,4 @@ class SimulationButton {
         }
         return true;
     }
-
-    keyDown(event) {
-        if (event.keyCode !== 32) return false;
-        this.changeState();
-        return true;
-    }
 }

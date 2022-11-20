@@ -42,6 +42,9 @@ class Game {
 
         this.camera = new Camera();
         this.grid = new BackgroundGrid(this);
+
+        this.nodeEditor = new NodeEditorManager(this);
+        this.nodeConnectionEditor = new NodeConnectionEditor(this);
         this.nodeConnectionManager = new NodeConnectionManager(this);
         this.nodePlacementManager = new NodePlacementManager(this);
         this.nodeManagerButtons = new NodeManagementButton(this);
@@ -57,7 +60,7 @@ class Game {
     }
 
     async init() {
-        await this.level.loadLevel("first-level");
+        await this.level.loadLevel("second-level");
     }
 
     emitEvent(event, data) {

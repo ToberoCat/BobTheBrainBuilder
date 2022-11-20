@@ -9,6 +9,16 @@
     vertical-align: middle;
 }
 
+
+#connection-settings > label {
+    position: relative;
+    float: left;
+    font-family: monospace;
+    color: #fff;
+    font-size: 20px;
+    padding-left: 10px;
+}
+
 #caret {
     border-right: .05em solid;
     animation: caret .5s steps(1) infinite;

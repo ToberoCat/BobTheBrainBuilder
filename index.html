@@ -22,6 +22,9 @@
 
         <!-- Node scripts -->
         <script src="src/js/Node/Node.js"></script>
+        <script src="src/js/Node/NodeEditorManager.js"></script>
+        <script src="src/js/Node/NodeConnectionEditor.js"></script>
+
         <script src="src/js/Node/NodeConnectionManager.js"></script>
         <script src="src/js/Node/NodePlacementManager.js"></script>
 
@@ -52,11 +55,29 @@
         <input id="cancelbutton" class="image-button unselect" type="image" name="Cancel Node"
                src="res/buttons/cancel.svg"
                alt="Cancel this action">
+
+        <input id="deletenode" class="image-button unselect" type="image" name="Delete Node"
+               src="res/buttons/trash.svg"
+               alt="Delete the node">
+
+        <input id="movenode" class="image-button unselect" type="image" name="Move Node"
+               src="res/buttons/move.svg"
+               alt="Move the node">
+
         <input id="playbutton" class="image-button unselect" type="image" name="Play Button"
                src="res/buttons/speed/default-speed-selected.svg"
                alt="Play simulation">
         <div id="speed" class="slider-container unselect">
-            <input type="range" id="speed-slider" class="slider" min="0" max="200" value="30">
+            <input style="visibility: hidden" type="range" id="speed-slider" class="slider" min="0" max="200" value="30">
+        </div>
+
+        <div id="connection-settings">
+            <input type="range" id="red-slider" class="slider" min="0" max="2" step="0.01" value="1">
+            <label id="red-label" for="red-slider">1</label>
+            <input type="range" id="green-slider" class="slider" min="0" max="2" step="0.01" value="1">
+            <label id="green-label" for="green-slider">1</label>
+            <input type="range" id="blue-slider" class="slider" min="0" max="2" step="0.01" value="1">
+            <label id="blue-label" for="blue-slider">1</label>
         </div>
     </body>
 </html>
