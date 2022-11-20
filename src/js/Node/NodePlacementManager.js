@@ -1,17 +1,21 @@
 class NodePlacementManager extends GameElement {
     constructor(game) {
         super(game);
+        this.reload();
+
+        this.addEventListener("mousedown", this.mouseDown);
+        this.addEventListener("mouseup", this.mouseUp);
+        this.addEventListener("mousemove", this.mouseMove);
+        this.addEventListener("zooming", this.zoom);
+    }
+
+    reload() {
         this.nodeX = 0;
         this.nodeY = 0;
 
         this.placing = false;
         this.nodes = [];
         this.occupations = [];
-
-        this.addEventListener("mousedown", this.mouseDown);
-        this.addEventListener("mouseup", this.mouseUp);
-        this.addEventListener("mousemove", this.mouseMove);
-        this.addEventListener("zooming", this.zoom);
     }
 
     isOccupied(xC, yC) {

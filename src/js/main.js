@@ -60,13 +60,15 @@ class Game {
     }
 
     async init() {
-        await this.level.loadLevel("second-level");
+        await this.level.loadLevel("level-1");
     }
 
     emitEvent(event, data) {
         for (const listener of this.listeners)
-            if (listener.emitEvent(event, data))
+            if (listener.emitEvent(event, data)) {
+                event.preventDefault();
                 return;
+            }
     }
 
     registerElement(element) {

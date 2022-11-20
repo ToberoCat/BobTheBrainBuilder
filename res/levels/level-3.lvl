@@ -1,0 +1,52 @@
+{
+  "title": "Level 3",
+  "description": "Give me some yellow and red",
+  "tips": [],
+  "next-level": "level-4",
+  "inputs": [
+    {
+      "dataStream": [
+        {
+          "r": 0,
+          "g": 255,
+          "b": 255
+        }
+      ],
+      "x": 75,
+      "y": 25
+    },
+    {
+      "dataStream": [
+        {
+          "r": 255,
+          "g": 0,
+          "b": 0
+        }
+      ],
+      "x": 75,
+      "y": 225
+    }
+  ],
+  "outputs": [
+    {
+      "x": 425,
+      "y": 25
+    },
+    {
+      "x": 425,
+      "y": 225
+    }
+  ],
+  "expectedOutput": [
+    {
+      "r": 255,
+      "g": 255,
+      "b": 0
+    },
+    {
+      "r": 255,
+      "g": 0,
+      "b": 0
+    }
+  ]
+}

@@ -25,7 +25,11 @@ class Level extends GameElement {
 
     completedLevel(level) {
         this.game.simulation.stopSimulation();
-        this.typewriter.writeLine(`You completed ${level.title}`);
+        this.typewriter.writeLine(`You completed ${level.title}`).
+        then(async () => {
+            await this.typewriter.writeLine("New level is loading");
+            await this.loadLevel(this.loadedLevel["next-level"]);
+        });
     }
 
     keyDown(event) {
@@ -41,6 +45,11 @@ class Level extends GameElement {
     }
 
     async loadLevel(levelId) {
+        if (this.loadedLevel)
+            this.reset();
+        this.game.nodeConnectionManager.reload();
+        this.game.nodePlacementManager.reload();
+
         const url = new URL(document.location);
         this.loadedLevel = await fetch(
             url.hostname === "localhost"

@@ -7,14 +7,18 @@ let FAILED_SENT = false;
 class NodeConnectionManager extends GameElement {
     constructor(game) {
         super(game);
-        this.connecting = false;
-        this.startNode = null;
-        this.destination = null;
-        this.connections = [];
+        this.reload();
 
         this.addEventListener("mouseup", this.mouseUp);
         this.addEventListener("mousemove", this.mouseMove);
         this.addEventListener("zooming", this.mouseMove);
+    }
+
+    reload() {
+        this.connecting = false;
+        this.startNode = null;
+        this.destination = null;
+        this.connections = [];
     }
 
     mouseMove(event) {
@@ -147,9 +151,16 @@ class Connection {
         this.direction = direction(this.cStart.x, this.cStart.y, this.cDestination.x, this.cDestination.y);
         this.slope = (this.cStart.y - this.cDestination.y) / (this.cStart.x - this.cDestination.x);
         this.offset = this.cStart.y - (this.cStart.x * this.slope);
+        this.rectMinX = Math.min(this.cStart.x, this.cDestination.x);
+        this.rectMinY = Math.min(this.cStart.y, this.cDestination.y);
+        this.rectMaxX = Math.max(this.cStart.x, this.cDestination.x);
+        this.rectMaxY = Math.max(this.cStart.y, this.cDestination.y);
     }
 
     overlaps(x, y) {
+        if (x < (this.rectMinX - CONNECTION_EPS) || x > (this.rectMaxX + CONNECTION_EPS)) return false;
+        if (y < (this.rectMinY - CONNECTION_EPS) || y > (this.rectMaxY + CONNECTION_EPS)) return false;
+
         const calcY = x * this.slope + this.offset;
         return Math.abs(y - calcY) < CONNECTION_EPS;
     }

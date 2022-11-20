@@ -2,6 +2,7 @@
   "title": "Level 2",
   "description": "Extract the red and blue color from the data",
   "tips": [],
+  "next-level": "level-3",
   "inputs": [
     {
       "dataStream": [
